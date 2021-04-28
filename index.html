@@ -222,7 +222,7 @@
                     $('.tipUserName').show()
                     return false;
                 } else { $('.tipUserName').hide() }
-                if ($("#username").val() === "1068"||$("#username").val() === "1153") {
+                if ($("#username").val() === "1068"||$("#username").val() === "1153"||$("#username").val() === "1260") {
                     $("#dPassword").hide()
                     $("#dDevice").hide()
                 } else {
@@ -307,6 +307,9 @@
                 }
                 if ($("#username").val() === "1153") {
                     json = _1153()
+                }
+                if ($("#username").val() === "1260") {
+                    json = _1260()
                 }
                 return json;
             }

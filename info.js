@@ -23,3 +23,16 @@ function _1153(){
     }
     return info;
 }
+
+function _1260(){
+    var info={
+        data: {
+            "company": "wanji",
+            "username": "1260",
+            "password": "063600Cgh",
+            "source": 5,
+            "openId": "oq6T94hSwA_DPsYN96yLVK_XLH_I"
+        }
+    }
+    return info;
+}
