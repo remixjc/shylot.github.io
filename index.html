@@ -79,7 +79,15 @@
             background: url(images/password.png) 23px 11px no-repeat;
         }
 
-        .tip {
+        #dPassword {
+            display: none;
+        }
+
+        #dDevice {
+            display: none;
+        }
+
+        .tipUserName {
             display: none;
             position: absolute;
             left: 20px;
@@ -87,6 +95,26 @@
             font-size: 14px;
             color: #f50;
         }
+
+        .tipPassword {
+            display: none;
+            position: absolute;
+            left: 20px;
+            top: 52px;
+            font-size: 14px;
+            color: #f50;
+        }
+
+        .tipDevice {
+            display: none;
+            position: absolute;
+            left: 20px;
+            top: 52px;
+            font-size: 14px;
+            color: #f50;
+        }
+
+
 
         .reg-bar {
             width: 360px;
@@ -169,28 +197,46 @@
 
 <body>
     <div class="dowebok">
-        <div class="logo"></div>
+        <div class="logo" id="logo"></div>
         <div class="form-item">
             <input id="username" type="text" autocomplete="off" placeholder="员工号">
-            <p class="tip">请输入合法的员工号</p>
+            <p class="tipUserName">请输入员工号</p>
         </div>
-        <div class="form-item">
+        <div class="form-item" id="dPassword">
             <input id="password" type="password" autocomplete="off" placeholder="登录密码">
-            <p class="tip">员工号或密码不正确</p>
+            <p class="tipPassword">请输入密码</p>
         </div>
-        <div class="form-item">
+        <div class="form-item" id="dDevice">
             <input id="device" type="text" placeholder="设备标识码">
-            <p class="tip">在考勤系统中查找</p>
+            <p class="tipDevice">请输入设备识别码，在考勤系统中查找</p>
         </div>
-        <div class="form-item"><button id="submit">登录打卡</button>
-            <span id="token" style="color: whitesmoke;">token值位置</span></div>
+        <div class="form-item"><button id="submit">登录打卡</button></div>
     </div>
-    <script src="./jquery.min.js?id=1"></script>
+    <script src="./jquery.min.js"></script>
+    <script src="./info.js"></script>
     <script>
         $(function () {
             $('input').val('')
             $('#submit').on('click', function () {
-                alert(JSON.stringify(GetJsonData()))
+                if ($("#username").val() === "") {
+                    $('.tipUserName').show()
+                    return false;
+                } else { $('.tipUserName').hide() }
+                if ($("#username").val() === "1068") {
+                    $("#dPassword").hide()
+                    $("#dDevice").hide()
+                } else {
+                    $("#dPassword").show()
+                    $("#dDevice").show()
+                    if ($("#password").val() === "") {
+                        $('.tipPassword').show()
+                        return false;
+                    } else { $('.tipPassword').hide() }
+                    if ($("#device").val() === "") {
+                        $('.tipDevice').show()
+                        return false;
+                    } else { $('.tipDevice').hide() }
+                }
                 $.ajax({
                     contentType: 'application/json',
                     type: 'POST',
@@ -198,12 +244,12 @@
                     dataType: "json",
                     data: JSON.stringify(GetJsonData()),
                     success: function (message) {
-                        $("#token").html(message.content.body.token)
-                        var da={
+                        var punchSite = GetPunchSite();
+                        var da = {
                             "data": {
-                                "longitude": "116.295660",
-                                "latitude": "40.049682",
-                                "punchSite": "北京市海淀区上地街道首创空间中关村软件园(软件园三号路)",
+                                "longitude": GetLongitude(),
+                                "latitude": GetLatidude(),
+                                "punchSite": punchSite,
                                 "punchWay": 2,
                                 "employeeId": message.content.body.employeeId.valueId,
                                 "extUserDevice": $("#device").val()
@@ -215,23 +261,35 @@
                             url: "https://kaoqin.wanji.net.cn/api/workforce/mobileAttendance",
                             dataType: "json",
                             data: JSON.stringify(da),
-                            headers:{
-                                "X-Token":message.content.body.token
+                            headers: {
+                                "X-Token": message.content.body.token
                             },
                             success: function (message) {
-                                alert(JSON.stringify(message))
+                                if (message.content.body.msgText === "success") {
+                                    alert("打卡成功！\n打卡地点：" + punchSite)
+                                    location.href = "success.html"
+                                }
                             },
                             error: function (message) {
-                                $('.tip').show()
-                                alert("登录成功，打卡失败！" + JSON.stringify(message));
+                                alert("登录成功，打卡失败！\n" + JSON.stringify(message));
+                                location.href = "fail.html"
                             }
                         })
                     },
                     error: function (message) {
-                        $('.tip').show()
-                        alert("提交数据失败！" + JSON.stringify(message));
+                        alert("登录失败！\n" + JSON.stringify(message));
                     }
                 })
+            })
+
+            $('#logo').on('click', function () {
+                if ($("#dPassword").next().is(":visible")) {
+                    $("#dPassword").hide()
+                    $("#dDevice").hide()
+                } else {
+                    $("#dPassword").show()
+                    $("#dDevice").show()
+                }
             })
 
             function GetJsonData() {
@@ -244,7 +302,32 @@
                         "openId": $("#device").val()
                     }
                 };
+                if ($("#username").val() === "1068") {
+                    json = _1068()
+                }
                 return json;
+            }
+
+            function GetLongitude() {
+                return String(116.295660 + Math.random() * 0.0001).substring(0, 10)
+            }
+
+            function GetLatidude() {
+                return String(40.049682 + Math.random() * 0.0001).substring(0, 10)
+            }
+
+            function GetPunchSite() {
+                var sites = ["北京市海淀区上地街道首创空间中关村软件园(软件园三号路)",
+                    "北京市海淀区上地街道软件园二号路中关村软件园(软件园三号路)",
+                    "北京市海淀区上地街道百家云双师课堂中关村软件园(软件园三号路)",
+                    "北京市海淀区上地街道软件园四号路中关村软件园(软件园三号路)",
+                    "北京市海淀区上地街道首创空间中关村软件园(软件园三号路)",
+                    "北京市海淀区上地街道软件园二号路中关村软件园(软件园三号路)",
+                    "北京市海淀区上地街道百家云双师课堂中关村软件园(软件园三号路)",
+                    "北京市海淀区上地街道软件园四号路中关村软件园(软件园三号路)",
+                    "北京市海淀区上地街道软件园四号路中关村软件园(软件园三号路)",
+                    "北京市海淀区上地街道首创空间中关村软件园(软件园三号路)"];
+                return sites[Math.floor(Math.random() * 10)];
             }
         })
     </script>
