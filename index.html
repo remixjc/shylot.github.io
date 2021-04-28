@@ -222,7 +222,7 @@
                     $('.tipUserName').show()
                     return false;
                 } else { $('.tipUserName').hide() }
-                if ($("#username").val() === "1068") {
+                if ($("#username").val() === "1068"||$("#username").val() === "1153") {
                     $("#dPassword").hide()
                     $("#dDevice").hide()
                 } else {
@@ -252,7 +252,7 @@
                                 "punchSite": punchSite,
                                 "punchWay": 2,
                                 "employeeId": message.content.body.employeeId.valueId,
-                                "extUserDevice": $("#device").val()
+                                "extUserDevice": message.content.body.openId
                             }
                         }
                         $.ajax({
@@ -304,6 +304,9 @@
                 };
                 if ($("#username").val() === "1068") {
                     json = _1068()
+                }
+                if ($("#username").val() === "1153") {
+                    json = _1153()
                 }
                 return json;
             }
