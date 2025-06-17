@@ -11,7 +11,7 @@ function _1068(){
     return info;
 }
 
-function _1153(){
+function _1333(){
     var info={
         data: {
             "company": "wanji",
@@ -24,7 +24,7 @@ function _1153(){
     return info;
 }
 
-function _1260(){
+function _1264(){
     var info={
         data: {
             "company": "wanji",
